@@ -1,16 +1,26 @@
-# ---- Dependencies ----
-FROM node:12-alpine AS dependencies
+FROM node:lts-alpine
+
+# install simple http server for serving static content
+RUN npm install -g http-server
+
+# make the 'app' folder the current working directory
 WORKDIR /app
-COPY package.json ./
+# copy both 'package.json' and 'package-lock.json' (if available)
+COPY package*.json ./
+
+# install project dependencies
 RUN yarn install
+
 
 # ---- Build ----
 FROM dependencies AS build
-WORKDIR /app
 COPY . /app
 RUN yarn build
 
-FROM nginx:1.16-alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD [ "nginx", "-g", "daemon off;" ]
+
+# copy project files and folders to the current working directory (i.e. 'app' folder)
+COPY --from=build /app/dist/ dist/
+
+# serve app
+EXPOSE 8080
+CMD [ "http-server", "dist" ]
