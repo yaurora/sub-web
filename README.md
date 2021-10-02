@@ -35,7 +35,26 @@ docker run -d -p 8080:8080 --restart unless-stopped --name subconverter-web subc
 docker run -d -p 8080:8080 --restart unless-stopped --name subconverter-web yaurora/subconverter-web:latest
 ```
 ## docker-compose
-
+example along with subconverter backend
+```yaml
+                            
+version: '3'
+services:
+  subconverter:
+    image: stilleshan/subconverter
+    container_name: subconverter
+    networks:
+      default:
+    ports:
+      - 25500:25500
+    restart: unless-stopped
+  subconverter-web:
+    restart: unless-stopped
+    container_name: subconverter-web
+    image: yaurora/subconverter-web:latest
+    ports:
+      - 8080:8080
+```
 ## deploy on baremetal
 
 ### install dependencies
